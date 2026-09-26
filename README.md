@@ -21,9 +21,10 @@ Sin `pip install`, sin `node_modules`, sin servidor de base de datos: `sqlite3`,
 ejecutar desde la terminal:
 
 ```bash
-python3 app/tests/casos.py        # 30 casos de prueba del núcleo · sale != 0 si falla
-python3 app/tests/linea_base.py   # medición comparada que respalda el objetivo OI5
-python3 app/tests/smoke.py        # recorrido del flujo real en Chromium
+python3 app/tests/casos.py         # 30 casos de prueba del núcleo · sale != 0 si falla
+python3 app/tests/linea_base.py    # medición comparada que respalda el objetivo OI5
+python3 app/tests/documentacion.py # la documentación generada es reproducible
+python3 app/tests/smoke.py         # recorrido del flujo real en Chromium
 ```
 
 - Detalle de la aplicación, reglas y estructura: [`app/README.md`](app/README.md)
@@ -198,6 +199,7 @@ proyecto-si783-2026-ii-generador-datos/
         ├── casos.py             30 pruebas del núcleo
         ├── smoke.py             Recorrido del flujo real en Chromium
         ├── linea_base.py        Medición comparada del objetivo OI5
-        ├── EVIDENCIAS.md        Salida real de las tres verificaciones
+        ├── documentacion.py     Comprobación de que la documentación es reproducible
+        ├── EVIDENCIAS.md        Salida real de las verificaciones
         └── capturas/            Capturas del recorrido
 ```
