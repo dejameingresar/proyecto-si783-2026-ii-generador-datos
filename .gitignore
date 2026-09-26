@@ -1,0 +1,25 @@
+# Entorno y artefactos de un solo uso: el repo lleva el producto, no el andamiaje.
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.venv/
+venv/
+
+# Salidas de las capturas del smoke test: se regeneran con app/tests/smoke.py
+app/tests/capturas/
+
+# Bases y exports generados en la demo
+*.sqlite
+*.sqlite3
+*.db
+export/
+salidas/
+
+# Sistema operativo y editores
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/

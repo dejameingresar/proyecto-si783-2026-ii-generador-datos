@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DataForge · generador de datos</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+<header>
+  <div class="marca">
+    <h1>DataForge</h1>
+    <p class="sub">Generador de datos para bases de datos · proyecto SI-783</p>
+  </div>
+  <div class="acciones">
+    <label class="campo">
+      <span>Semilla</span>
+      <input id="semilla" type="number" value="2026" min="0" step="1">
+    </label>
+    <button id="btn-generar" class="primario">Generar lote</button>
+    <button id="btn-demo">Cargar en SQLite</button>
+  </div>
+</header>
+
+<p id="estado" class="estado" hidden></p>
+
+<main>
+  <section class="panel">
+    <h2>1. Esquema declarativo <small id="esquema-titulo"></small></h2>
+    <p class="nota">
+      Una sola definicion en <code>app/nucleo/esquemas.py</code> produce el DDL de
+      SQLite, PostgreSQL y MySQL, ademas de los datos. Edita el volumen de cada
+      tabla antes de generar.
+    </p>
+    <div id="volumenes" class="volumenes"></div>
+  </section>
+
+  <section class="panel">
+    <h2>2. Lote generado <small id="resumen"></small></h2>
+    <div id="metricas" class="metricas"><p class="vacio">Aun no se ha generado nada.</p></div>
+  </section>
+
+  <section class="panel">
+    <h2>3. Exportar</h2>
+    <div class="exportar">
+      <label class="campo">
+        <span>Motor</span>
+        <select id="motor">
+          <option value="postgresql">PostgreSQL</option>
+          <option value="mysql">MySQL</option>
+          <option value="sqlite">SQLite</option>
+        </select>
+      </label>
+      <label class="campo">
+        <span>Formato</span>
+        <select id="formato">
+          <option value="sql">Script SQL</option>
+          <option value="csv">CSV</option>
+        </select>
+      </label>
+      <button id="btn-exportar" class="primario">Generar script</button>
+      <button id="btn-descargar">Descargar</button>
+    </div>
+    <pre id="sql" class="sql" tabindex="0">El script aparece aqui.</pre>
+  </section>
+
+  <section class="panel">
+    <h2>4. Base real en SQLite <small id="sqlite-resumen"></small></h2>
+    <p class="nota">
+      Crea las 8 tablas en una base SQLite en memoria, carga el lote y verifica
+      con el propio motor (<code>PRAGMA foreign_key_check</code>) que no hay
+      filas huerfanas ni claves repetidas.
+    </p>
+    <div id="sqlite-out"><p class="vacio">Pulsa «Cargar en SQLite».</p></div>
+  </section>
+</main>
+
+<script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+%% Generado por docs/generar_documentos.py — no editar a mano
+%% Esquema: EPSIS Salud — clinica de especialidades medicas
+erDiagram
+    especialidad {
+        INT id_especialidad PK
+        VARCHAR(10) codigo UK
+        VARCHAR(60) nombre UK
+        TEXT descripcion "opcional"
+    }
+    medico {
+        INT id_medico PK
+        CHAR dni UK
+        VARCHAR(80) nombres
+        VARCHAR(80) apellidos
+        VARCHAR email UK
+        VARCHAR telefono "opcional"
+        DATE fecha_ingreso
+        DECIMAL salario
+        BOOL activo
+        INT id_especialidad FK
+    }
+    paciente {
+        INT id_paciente PK
+        CHAR dni UK
+        VARCHAR(80) nombres
+        VARCHAR(80) apellidos
+        DATE fecha_nacimiento
+        ENUM sexo
+        VARCHAR email "opcional"
+        VARCHAR telefono "opcional"
+        VARCHAR(160) direccion "opcional"
+        DATE fecha_registro
+    }
+    turno {
+        INT id_turno PK
+        INT id_medico FK
+        DATE fecha
+        TIME hora_inicio
+        TIME hora_fin
+        VARCHAR(40) consulta
+    }
+    cita {
+        INT id_cita PK
+        VARCHAR(12) codigo UK
+        INT id_paciente FK
+        INT id_turno FK
+        DATE fecha
+        TIME hora
+        ENUM estado
+        VARCHAR(120) motivo
+    }
+    medicamento {
+        INT id_medicamento PK
+        VARCHAR(12) codigo UK
+        VARCHAR(80) nombre UK
+        VARCHAR(40) categoria
+        VARCHAR(60) presentacion "opcional"
+        DECIMAL precio_unitario
+        INT stock
+    }
+    receta {
+        INT id_receta PK
+        INT id_cita FK "opcional"
+        INT id_medico FK
+        DATE fecha_emision
+        VARCHAR(120) diagnostico
+        TEXT observaciones "opcional"
+    }
+    detalle_receta {
+        INT id_detalle PK
+        INT id_receta FK
+        INT id_medicamento FK
+        INT cantidad
+        VARCHAR(80) dosis
+        INT duracion_dias
+    }
+    especialidad ||--o{ medico : "id_especialidad"
+    medico ||--o{ turno : "id_medico"
+    paciente ||--o{ cita : "id_paciente"
+    turno ||--o{ cita : "id_turno"
+    cita ||--o| receta : "id_cita"
+    medico ||--o{ receta : "id_medico"
+    receta ||--o{ detalle_receta : "id_receta"
+    medicamento ||--o{ detalle_receta : "id_medicamento"

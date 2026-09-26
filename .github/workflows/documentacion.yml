@@ -1,0 +1,93 @@
+name: Pruebas y documentos
+
+# Cada push a la rama principal y cada pull request ejecutan las pruebas del
+# nucleo y regeneran la documentacion tecnica (diagrama ER, diccionario de
+# datos, manual y DDL) a partir del codigo.
+#
+# Los artefactos que se suben son la evidencia de que el repositorio esta
+# verde: quien revise el proyecto no necesita clonar nada para verlo.
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  verificar:
+    name: Pruebas y regenerar documentación
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Obtener el código
+        uses: actions/checkout@v4
+
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Pruebas del núcleo
+        run: python3 app/tests/casos.py
+
+      - name: Medición de la línea base (OI5)
+        run: python3 app/tests/linea_base.py
+
+      - name: Comprobar que la documentación es reproducible
+        run: python3 app/tests/documentacion.py
+
+      - name: Regenerar diagramas y manuales
+        run: python3 docs/generar_documentos.py
+
+      - name: Comprobar que el DDL generado se ejecuta en un motor real
+        run: |
+          # El script exportado no puede quedarse en teoria: se crea una base
+          # SQLite de verdad y se carga el DDL completo.
+          python3 - <<'PY'
+          import sqlite3, pathlib, sys
+          sql = pathlib.Path('docs/ddl.sql').read_text(encoding='utf-8')
+          con = sqlite3.connect(':memory:')
+          try:
+              con.executescript(sql)
+          except Exception as e:
+              print('FALLA: el DDL generado no se pudo ejecutar:', e)
+              sys.exit(1)
+          n = con.execute('SELECT COUNT(*) FROM paciente').fetchone()[0]
+          huerf = con.execute('PRAGMA foreign_key_check').fetchall()
+          print(f'OK: DDL ejecutado. paciente={n} filas, huerfanas={len(huerf)}')
+          if huerf:
+              sys.exit(1)
+          PY
+
+      - name: Guardar la evidencia
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidencia-dataforge
+          path: |
+            docs/
+          retention-days: 30
+
+      - name: Publicar la documentación en el repositorio
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        run: |
+          # Los artefactos se commitean solos: el diagrama y los manuales del
+          # repositorio nunca quedan desactualizados respecto al codigo.
+          #
+          # El SVG se regenera y se sube como artefacto, pero NO se commitea:
+          # mermaid-cli incrusta una fuente con un identificador aleatorio, asi
+          # que el binario cambia en cada ejecucion y provocaria un commit
+          # vacio en cada push. La fuente estable del diagrama es el .mmd.
+          git config user.name  'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/diagrama-er.mmd docs/diccionario-datos.md \
+                  docs/manual-tecnico.md docs/ddl.sql
+          if git diff --staged --quiet; then
+            echo 'La documentacion ya estaba al dia.'
+            exit 0
+          fi
+          git commit -m 'docs: regenera diagrama ER, diccionario, manual y DDL desde el codigo'
+          git push

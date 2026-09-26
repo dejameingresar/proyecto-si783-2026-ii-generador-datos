@@ -1,0 +1,56 @@
+name: Publicar en GitHub Pages
+
+# Sirve la documentacion tecnica (diagrama ER, diccionario de datos, manual y
+# DDL de ejemplo) en una URL publica del repositorio.
+#
+# La aplicacion Python NO se publica aqui: GitHub Pages solo sirve archivos
+# estaticos y no ejecuta Python. Para la aplicacion interactiva hay que elegir
+# un hosting que si la ejecute (ver DEPLOY.md).
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'docs/**'
+      - '.github/workflows/publicar.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# No concurrente: dos publications a la vez se pisan.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  publicar:
+    name: Publicar documentación
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.publicar.outputs.page_url }}
+
+    steps:
+      - name: Obtener el código
+        uses: actions/checkout@v4
+
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Regenerar la documentación desde el código
+        run: python3 docs/generar_documentos.py
+
+      - name: Publicar con el tema oficial
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+      - name: Desplegar en Pages
+        id: publicar
+        uses: actions/deploy-pages@v4
