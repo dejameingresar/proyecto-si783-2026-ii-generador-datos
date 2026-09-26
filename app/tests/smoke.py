@@ -117,6 +117,20 @@ def main():
              filas_nuevas != filas_ini, f"antes={filas_ini!r} despues={filas_nuevas!r}")
         print(f"        resumen nuevo:   {filas_nuevas.strip()}")
 
+        # Lo que se ve en los deslizadores debe ser lo que se genera: con un paso
+        # de 10 el navegador redondeaba en silencio 8 -> 10 y 25 -> 30, y la
+        # pantalla mostraba un total que nadie habia pedido.
+        sliders = pagina.evaluate("""() => {
+            const o = {};
+            document.querySelectorAll('.vol-card input[type=range]').forEach(r => {
+                o[r.id.replace('vol-', '')] = r.value;
+            });
+            return o;
+        }""")
+        paso("3 · cada deslizador conserva el volumen por defecto sin redondear",
+             sliders.get("especialidad") == "8" and sliders.get("medico") == "25",
+             f"valores={ {k: sliders[k] for k in ('especialidad', 'medico')} }")
+
         # Filas de la tabla de metricas deben reflejar el volumen pedido.
         pacientes = pagina.inner_text(
             "#metricas tbody tr:has(code:text-is('paciente'))")

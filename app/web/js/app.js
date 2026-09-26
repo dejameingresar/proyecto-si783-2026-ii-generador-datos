@@ -58,7 +58,11 @@ function pintaVolumenes(esc) {
     rango.type = 'range';
     rango.min = '0';
     rango.max = '600';
-    rango.step = '10';
+    // step=1, no step=10: con un paso de 10 el deslizador no puede representar
+    // los volumenes por defecto (especialidad=8, medico=25) y el navegador los
+    // redondea en silencio, de modo que la pantalla mostraria un total distinto
+    // del que se pidio. Un paso de 1 hace que lo que se ve sea lo que se genera.
+    rango.step = '1';
     rango.value = String(t.volumen);
     rango.id = 'vol-' + nombre;
     rango.setAttribute('aria-label', 'filas de ' + nombre);
