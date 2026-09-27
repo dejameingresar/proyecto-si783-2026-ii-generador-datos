@@ -31,6 +31,15 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Preparar el renderizado del diagrama
+        # mermaid-cli usa Puppeteer, que necesita un Chromium propio. El runner
+        # de ubuntu-latest no lo trae: sin este paso el SVG no se genera.
+        run: |
+          npx -y puppeteer@23 browsers install chrome
+          echo "PUPPETEER_EXECUTABLE_PATH=$(npx -y puppeteer@23 browsers list | grep -m1 chrome | sed 's/.*: //')" \
+            >> "$GITHUB_ENV"
+          echo "PUPPETEER_SKIP_DOWNLOAD=true" >> "$GITHUB_ENV"
+
       - name: Pruebas del núcleo
         run: python3 app/tests/casos.py
 
