@@ -277,19 +277,100 @@ def main():
         fh.write(sql)
     print(f"  generado: docs/ddl.sql ({len(sql)} bytes)")
 
-    # SVG del diagrama, si hay mermaid-cli disponible (opcional).
+    # SVG del diagrama. Se intenta mermaid-cli (npx) y, si falla, Chromium via
+    # Playwright, que es el camino que funciona en CI: alli el runner no tiene el
+    # Chrome que el Puppeteer de mermaid-cli espera, y el diagrama se queda sin
+    # renderizar. En ambos casos el .mmd sigue siendo la fuente del diagrama.
     mmd = os.path.join(DOCS, "diagrama-er.mmd")
     svg = os.path.join(DOCS, "diagrama-er.svg")
     if os.path.isfile(svg):
         os.remove(svg)
-    try:
-        subprocess.run(["npx", "-y", "@mermaid-js/mermaid-cli", "-i", mmd, "-o", svg],
-                       check=True, capture_output=True, timeout=180)
-        print(f"  generado: docs/diagrama-er.svg")
-    except Exception as e:  # sin red o sin node: el .mmd sigue siendo la fuente
-        print(f"  aviso: no se pudo renderizar el SVG ({type(e).__name__}). "
+
+    if _render_con_mermaid_cli(mmd, svg):
+        print("  generado: docs/diagrama-er.svg (mermaid-cli)")
+    elif _render_con_chromium(mmd, svg):
+        print("  generado: docs/diagrama-er.svg (chromium)")
+    else:
+        print("  aviso: no se pudo renderizar el SVG. "
               "El diagrama queda en docs/diagrama-er.mmd")
     return 0
+
+
+# Se ejecuta dentro del navegador: pide a Mermaid que convierta el diagrama en
+# SVG. Vive fuera de la funcion para que las comillas del JavaScript no se
+# mezclen con las de Python.
+JS_RENDER = """async (fuente) => {
+    mermaid.initialize({ startOnLoad: false });
+    const r = await mermaid.render("dataforge-er", fuente);
+    return r.svg;
+}"""
+
+
+def _render_con_mermaid_cli(mmd, svg):
+    """Primer intento: mermaid-cli, que es lo simple cuando hay red y Chrome."""
+    try:
+        subprocess.run(["npx", "-y", "@mermaid-js/mermaid-cli", "-i", mmd, "-o", svg],
+                       check=True, capture_output=True, timeout=240)
+        return os.path.isfile(svg) and os.path.getsize(svg) > 1000
+    except Exception:
+        return False
+
+
+def _render_con_chromium(mmd, svg):
+    """Segundo intento: Chromium ya instalado, renderizando el HTML de Mermaid.
+
+    No necesita la red ni el Puppeteer de mermaid-cli: solo un navegador. Es el
+    camino que funciona en el runner de GitHub Actions y en unportatil con
+    Playwright instalado.
+    """
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        return False
+
+    ejecutable = os.environ.get("CHROME_BIN", "")
+    if not ejecutable:
+        cache = os.path.expanduser("~/.cache/ms-playwright")
+        if os.path.isdir(cache):
+            for sub in sorted(os.listdir(cache)):
+                for rel in ("chrome-linux64/chrome", "chrome-linux/chrome",
+                            "chrome-headless-shell-linux64/chrome-headless-shell"):
+                    ruta = os.path.join(cache, sub, rel)
+                    if os.path.isfile(ruta):
+                        ejecutable = ruta
+                        break
+                if ejecutable:
+                    break
+    if not ejecutable:
+        return False
+
+    with open(mmd, encoding="utf-8") as fh:
+        fuente = fh.read()
+
+    try:
+        with sync_playwright() as p:
+            nav = p.chromium.launch(headless=True, executable_path=ejecutable)
+            pagina = nav.new_page(viewport={"width": 1400, "height": 1000})
+            pagina.set_content(
+                "<!DOCTYPE html><html><head><meta charset='utf-8'>"
+                "<style>body{margin:0;background:#fff}</style></head>"
+                "<body><div id='d'></div></body></html>")
+            # Mermaid se carga del CDN y recibe el diagrama como texto, no como
+            # HTML: el contenido del .mmd no puede inyectar nodos en la pagina.
+            pagina.add_script_tag(
+                url="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js")
+            svg_markup = pagina.evaluate(JS_RENDER, fuente)
+            nav.close()
+    except Exception:
+        return False
+
+    if not svg_markup or "<svg" not in svg_markup:
+        return False
+    ancho = "width=\"100%\""
+    svg_markup = svg_markup.replace('style="max-width: 100%;"', ancho, 1)
+    with open(svg, "w", encoding="utf-8") as fh:
+        fh.write('<?xml version="1.0" encoding="UTF-8"?>\n' + svg_markup)
+    return os.path.getsize(svg) > 1000
 
 
 if __name__ == "__main__":

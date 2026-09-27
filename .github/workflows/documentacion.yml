@@ -32,19 +32,15 @@ jobs:
           python-version: '3.11'
 
       - name: Preparar el renderizado del diagrama
-        # mermaid-cli usa Puppeteer, que necesita un Chromium propio. El runner
-        # de ubuntu-latest no lo trae: sin este paso el SVG no se genera.
+        # El SVG del diagrama se genera con Chromium via Playwright, no con el
+        # Puppeteer de mermaid-cli: en el runner de ubuntu-latest ese Puppeteer
+        # busca un Chrome que no esta y el renderizado falla. Chromium si se
+        # instala de forma fiable, y es el mismo motor que usa el smoke test.
         run: |
-          npx -y puppeteer@23 browsers install chrome
-          # 'browsers list' imprime "chrome@131.0.6778.204 (linux) /ruta/chrome":
-          # la ruta es el ULTIMO campo, no lo que sigue a los dos puntos de la
-          # version. Un sed por ':' no quita nada y deja la variable invalida,
-          # que es justo lo que hacia fallar el renderizado del SVG.
-          CHROME="$(npx -y puppeteer@23 browsers list | grep -m1 chrome | awk '{print $NF}')"
-          echo "Ruta de Chrome: $CHROME"
-          test -x "$CHROME" || { echo "::error::Chrome no encontrado en $CHROME"; exit 1; }
-          echo "PUPPETEER_EXECUTABLE_PATH=$CHROME" >> "$GITHUB_ENV"
-          echo "PUPPETEER_SKIP_DOWNLOAD=true" >> "$GITHUB_ENV"
+          python3 -m pip install --quiet playwright
+          python3 -m playwright install --with-deps chromium
+          echo "CHROME_BIN=$(python3 -c 'from playwright.sync_api import sync_playwright; p=sync_playwright().start(); print(p.chromium.executable_path); p.stop()')" \
+            >> "$GITHUB_ENV"
 
       - name: Pruebas del núcleo
         run: python3 app/tests/casos.py
