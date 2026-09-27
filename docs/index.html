@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DataForge · documentación técnica</title>
+<meta name="description" content="Documentación técnica generada desde el código de DataForge, generador de datos de prueba para bases de datos. SI-783 Base de Datos II.">
+<style>
+  :root {
+    --fondo: #10141c; --panel: #171d28; --panel-2: #1e2532; --borde: #2a3444;
+    --texto: #e8edf5; --tenue: #93a1b5; --acento: #4da3ff; --verde: #35d39a;
+    --alerta: #ffb454;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--fondo); color: var(--texto);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.6;
+  }
+  a { color: var(--acento); }
+  .caja { max-width: 900px; margin: 0 auto; padding: 2.5rem 1.2rem 4rem; }
+  h1 { margin: 0; font-size: 1.9rem; letter-spacing: .2px; }
+  h1::before { content: "▚ "; color: var(--acento); }
+  h2 { font-size: 1.15rem; margin: 2.2rem 0 .8rem; }
+  .sub { color: var(--tenue); margin: .3rem 0 0; font-size: .95rem; }
+  .meta {
+    display: flex; gap: .5rem; flex-wrap: wrap; margin: 1.4rem 0 0;
+  }
+  .pastilla {
+    background: var(--panel-2); border: 1px solid var(--borde);
+    border-radius: 999px; padding: .25rem .8rem; font-size: .8rem;
+  }
+  .pastilla b { color: var(--verde); }
+  .nota {
+    background: rgba(77,163,255,.09); border: 1px solid rgba(77,163,255,.35);
+    border-left-width: 3px; border-radius: 8px; padding: .9rem 1.1rem;
+    margin: 1.6rem 0; font-size: .9rem; color: var(--texto);
+  }
+  .nota.alerta {
+    background: rgba(255,180,84,.09); border-color: rgba(255,180,84,.4);
+  }
+  .nota strong { color: var(--alerta); }
+  .rejilla { display: grid; gap: .8rem; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); }
+  .tarjeta {
+    display: block; text-decoration: none; color: inherit;
+    background: var(--panel); border: 1px solid var(--borde);
+    border-radius: 10px; padding: 1rem 1.1rem; transition: border-color .15s, transform .15s;
+  }
+  .tarjeta:hover { border-color: var(--acento); transform: translateY(-1px); }
+  .tarjeta h3 { margin: 0 0 .3rem; font-size: .98rem; color: var(--acento); }
+  .tarjeta p { margin: 0; color: var(--tenue); font-size: .84rem; }
+  .tabla { width: 100%; border-collapse: collapse; font-size: .86rem; margin-top: .5rem; }
+  .tabla th, .tabla td { text-align: left; padding: .45rem .6rem; border-bottom: 1px solid var(--borde); }
+  .tabla th { color: var(--tenue); font-size: .75rem; text-transform: uppercase; letter-spacing: .3px; }
+  .tabla td.num { text-align: right; font-family: ui-monospace, monospace; }
+  .ok { color: var(--verde); }
+  .diagrama {
+    background: #fff; border: 1px solid var(--borde); border-radius: 10px;
+    padding: 1rem; margin-top: .8rem; overflow: auto;
+  }
+  .diagrama img, .diagrama object { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+  footer { color: var(--tenue); font-size: .8rem; margin-top: 3rem; border-top: 1px solid var(--borde); padding-top: 1rem; }
+  code { background: var(--panel-2); padding: .1rem .35rem; border-radius: 4px; font-size: .86em; }
+</style>
+</head>
+<body>
+<div class="caja">
+
+  <h1>DataForge</h1>
+  <p class="sub">Documentación técnica del generador de datos de prueba para bases de
+     datos relacionales. Todo lo de esta página se <strong>genera desde el código</strong>
+     con <code>python3 docs/generar_documentos.py</code>; ningún archivo está escrito a mano.</p>
+
+  <div class="meta">
+    <span class="pastilla">SI-783 Base de Datos II</span>
+    <span class="pastilla">Ciclo 7 · 2026-II</span>
+    <span class="pastilla">8 tablas · <b>57 columnas</b></span>
+    <span class="pastilla">8 claves foráneas</span>
+    <span class="pastilla">8 <b>UNIQUE</b> · 2 compuestas</span>
+    <span class="pastilla">7 restricciones <b>CHECK</b></span>
+  </div>
+
+  <div class="nota">
+    <strong>Sobre la aplicación interactiva.</strong> Esta página es la documentación
+    técnica, que es estática y por eso se publica aquí. La aplicación en sí es un
+    servidor Python (<code>python3 app.py</code>) y necesita un alojamiento que la
+    ejecute; los sitios de archivos estáticos como este no pueden correr Python.
+  </div>
+
+  <h2>Documentos</h2>
+  <div class="rejilla">
+    <a class="tarjeta" href="manual-tecnico.md">
+      <h3>Manual técnico</h3>
+      <p>Qué hace, arquitectura módulo por módulo, puesta en marcha, portabilidad entre
+         motores y límites conocidos.</p>
+    </a>
+    <a class="tarjeta" href="diccionario-datos.md">
+      <h3>Diccionario de datos</h3>
+      <p>Cada tabla y cada columna con su tipo en SQLite y en PostgreSQL, su nulabilidad,
+         su clave y el generador que lo produce.</p>
+    </a>
+    <a class="tarjeta" href="ddl.sql">
+      <h3>DDL y datos de ejemplo</h3>
+      <p>Script completo: las 8 tablas y un lote de 1 213 filas. Se ejecuta tal cual en
+         un motor SQLite real.</p>
+    </a>
+    <a class="tarjeta" href="diagrama-er.mmd">
+      <h3>Diagrama ER (fuente)</h3>
+      <p>Diagrama entidad-relación en Mermaid. Este archivo es la fuente estable; el SVG
+         se regenera en cada publicación.</p>
+    </a>
+  </div>
+
+  <h2>Diagrama entidad-relación</h2>
+  <div class="diagrama">
+    <img src="diagrama-er.svg" alt="Diagrama entidad-relación del esquema EPSIS Salud:
+         8 entidades con sus columnas, claves primarias, foráneas y únicas, y sus
+         ocho relaciones.">
+  </div>
+
+  <h2>Mediciones verificadas</h2>
+  <table class="tabla">
+    <thead><tr><th>Comprobación</th><th>Resultado</th></tr></thead>
+    <tbody>
+      <tr><td>Lote generado (semilla 2026, volúmenes por defecto)</td><td class="num ok">1 213 filas</td></tr>
+      <tr><td>Filas aceptadas por el motor</td><td class="num ok">1 213 / 1 213 (100 %)</td></tr>
+      <tr><td>Filas huérfanas (<code>PRAGMA foreign_key_check</code>)</td><td class="num ok">0</td></tr>
+      <tr><td>Columnas <code>UNIQUE</code> sin repeticiones</td><td class="num ok">8 / 8</td></tr>
+      <tr><td>Celdas obligatorias vacías</td><td class="num ok">0</td></tr>
+      <tr><td>Pruebas del núcleo</td><td class="num ok">30 / 30</td></tr>
+      <tr><td>Pasos del recorrido en navegador</td><td class="num ok">23 / 23</td></tr>
+      <tr><td>Línea base: generador genérico (solo conoce el tipo)</td><td class="num">343 / 1 600 (21,4 %)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="nota">
+    La última fila es la que da sentido a todo lo demás: un generador que solo conoce
+    el tipo de cada columna —que es lo que hacen las herramientas comerciales— logra
+    que el motor acepte menos de un cuarto de las filas. DataForge, que además conoce
+    las claves, los <code>UNIQUE</code> y los <code>CHECK</code>, las acepta todas.
+  </div>
+
+  <footer>
+    Patrick Elvis Rodriguez Cardenas (2022075751) · Nicole Rios Cohaila (2022075745) ·
+    docente Ing. Patrick Jose Cuadros Quiroga.<br>
+    Los diagramas, el diccionario, el manual y el DDL se regeneran en cada
+    <code>push</code> mediante la automatización del repositorio.
+  </footer>
+
+</div>
+</body>
+</html>

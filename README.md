@@ -6,6 +6,11 @@
 **Integrantes:** Patrick Elvis Rodriguez Cardenas (2022075751) · Nicole Luciana Rios Cohaila (2022075745)
 **Docente:** Ing. Patrick Jose Cuadros Quiroga
 
+> **Documentación publicada:** <http://dataforge-si783-2026.surge.sh>
+> Diagrama ER, diccionario de datos, manual técnico y DDL de ejemplo, generados
+> desde el código. La aplicación interactiva es un servidor Python y no puede
+> vivir en un alojamiento estático; ver [DEPLOY.md](DEPLOY.md).
+
 ---
 
 ## Aplicación

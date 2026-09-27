@@ -63,6 +63,26 @@ jobs:
               sys.exit(1)
           PY
 
+      - name: Publicar la documentación en Surge
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        env:
+          SURGE_LOGIN: ${{ secrets.SURGE_LOGIN }}
+          SURGE_TOKEN: ${{ secrets.SURGE_TOKEN }}
+        run: |
+          # docs/publicar.sh lee el token de ~/.netrc. En el runner se inyecta
+          # desde los secretos del repositorio para no guardarlo en el repo.
+          if [ -z "$SURGE_LOGIN" ] || [ -z "$SURGE_TOKEN" ]; then
+            echo '::warning::Faltan los secretos SURGE_LOGIN / SURGE_TOKEN. Se omite la '
+            echo '::warning::publicacion; la documentacion ya quedo commiteada en el paso '
+            echo '::warning::anterior, asi que el repositorio sigue al dia.'
+            exit 0
+          fi
+          mkdir -p ~/.netrc
+          printf 'machine surge.surge.sh\n  login %s\n  password %s\n' \
+                 "$SURGE_LOGIN" "$SURGE_TOKEN" > ~/.netrc
+          chmod 600 ~/.netrc
+          bash docs/publicar.sh "$RUNNER_TEMP/publicar"
+
       - name: Guardar la evidencia
         uses: actions/upload-artifact@v4
         with:

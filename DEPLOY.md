@@ -16,10 +16,32 @@ decisión de hosting se tome con la evidencia a la vista.
 | Aplicación ejecutable sin dependencias | Listo | `python3 app.py` → HTTP 200 |
 | Pruebas del núcleo | 30/30 en verde | `python3 app/tests/casos.py` |
 | Medición de la línea base (OI5) | Ejecutada | `python3 app/tests/linea_base.py` |
-| Recorrido del flujo real en navegador | 22/22 pasos en verde | `python3 app/tests/smoke.py` |
+| Reproducibilidad de la documentación | Verificada | `python3 app/tests/documentacion.py` |
+| Recorrido del flujo real en navegador | 23/23 pasos en verde | `python3 app/tests/smoke.py` |
 | Diagrama ER, diccionario de datos, manual técnico, DDL | Generados desde el código | `python3 docs/generar_documentos.py` |
+| **Documentación publicada (URL pública)** | **Hecho** | <http://dataforge-si783-2026.surge.sh> |
 | Automatización de pruebas y documentación | Configurada | `.github/workflows/documentacion.yml` |
 | Publicación de la documentación en Pages | Configurada | `.github/workflows/publicar.yml` |
+
+### Documentación publicada en Surge
+
+<http://dataforge-si783-2026.surge.sh>
+
+Contiene la portada, el manual técnico, el diccionario de datos, el script DDL
+con 1 213 filas de ejemplo y el diagrama ER. Todo verificado: los seis archivos
+responden HTTP 200 y la página se renderiza con el diagrama completo.
+
+Se publica con un solo comando, que además regenera la documentación y verifica
+la URL al terminar:
+
+```bash
+bash docs/publicar.sh /tmp/publicar
+```
+
+El token se lee de `~/.netrc` (`machine surge.surge.sh`), así que el script no
+pide contraseña. La automatización de GitHub lo inyecta desde los secretos
+`SURGE_LOGIN` y `SURGE_TOKEN`; si no están, omite la publicación con un aviso
+en vez de fallar.
 
 Ambas automatizaciones hacen algo real, no decorativo:
 
@@ -31,10 +53,11 @@ Ambas automatizaciones hacen algo real, no decorativo:
 - **`publicar.yml`** publica `docs/` en GitHub Pages, con concurrencia controlada
   para que dos publicaciones no se pisen.
 
-## 2. La decisión que falta: dónde vive la aplicación
+## 2. La decisión que sigue pendiente: dónde vive la aplicación
 
-GitHub Pages **solo sirve archivos estáticos**: no ejecuta Python. Por eso, con la
-arquitectura actual (servidor `http.server` + SQLite), hay dos caminos reales.
+GitHub Pages y Surge **solo sirven archivos estáticos**: no ejecutan Python. Por
+eso, con la arquitectura actual (servidor `http.server` + SQLite), hay dos caminos
+reales para la **aplicación interactiva**.
 
 ### Opción A — Hospedar la aplicación Python (recomendada)
 
@@ -76,18 +99,29 @@ hosting. Eso es exactamente el estado actual. La decisión pendiente es de una l
 Si la respuesta es A, el siguiente paso es añadir `render.yaml` y conectar el
 repositorio: quince minutos. Si es B, es un proyecto aparte.
 
-## 4. Nota sobre la documentación publicada
-
-`publicar.yml` deja la **documentación técnica** (diagrama ER, diccionario de datos,
-manual, DDL de ejemplo) en una URL pública de Pages, porque eso sí es estático y sí
-sirve para pages. La **aplicación interactiva** necesita un hosting que ejecute
-Python: es el punto 2 de esta nota.
-
-## 5. Comandos útiles
+## 4. Comandos útiles
 
 ```bash
-python3 app.py                                    # aplicación en local
-python3 app/tests/casos.py                        # pruebas del núcleo
-python3 docs/generar_documentos.py               # regenerar diagramas y manuales
-python3 docs/generar_documentos.py               # el SVG requiere npx mermaid-cli
+python3 app.py                       # aplicación en local
+python3 app/tests/casos.py            # 30 pruebas del núcleo
+python3 app/tests/linea_base.py       # medición comparada (OI5)
+python3 app/tests/documentacion.py   # la documentación es reproducible
+python3 docs/generar_documentos.py   # regenerar diagramas y manuales
+bash docs/publicar.sh /tmp/publicar   # publicar en Surge y verificar la URL
 ```
+
+## 5. Nota sobre la documentación publicada
+
+La **documentación técnica** sí está publicada, porque es estática y se sirve
+desde un alojamiento de archivos:
+
+- **Surge (hecho y verificado):** <http://dataforge-si783-2026.surge.sh> —
+  portada, diagrama ER, diccionario de datos, manual y DDL con 1 213 filas de
+  ejemplo. Los seis archivos responden HTTP 200 y la página renderiza el
+  diagrama completo. Se publica con `bash docs/publicar.sh /tmp/publicar`.
+- **GitHub Pages (configurado):** `publicar.yml` deja lo mismo en la URL de
+  Pages del repositorio, si prefieres esa dirección.
+
+Lo que **no** puede vivir en ninguno de los dos es la **aplicación
+interactiva**: necesita un hosting que ejecute Python, que es el punto 2 de
+esta nota.
