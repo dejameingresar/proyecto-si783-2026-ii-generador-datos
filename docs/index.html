@@ -26,8 +26,10 @@
   h2 { font-size:1rem; color:var(--texto); margin:2rem 0 .6rem; }
   .diagrama {
     background:#fff; border:1px solid var(--borde, #2a3444); border-radius:8px;
-    padding:.8rem; max-height:70vh; overflow:auto;
+    padding:.8rem;
   }
+  /* Sin max-height ni overflow: el diagrama tiene ocho entidades y con un
+     recorte el lector solo ve la mitad sin notar que hay mas. */
   .diagrama img { max-width:100%; height:auto; display:block; margin:0 auto; }
   code { background:#1e2532; padding:.1rem .35rem; border-radius:4px; font-size:.86em; }
 </style>
