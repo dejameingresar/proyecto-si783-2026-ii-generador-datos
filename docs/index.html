@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DataForge · documentación técnica</title>
+<meta name="description" content="Documentación técnica de DataForge, generador de datos de prueba para bases de datos relacionales. SI-783 Base de Datos II.">
+<meta http-equiv="refresh" content="1; url=./manual-tecnico.md">
+<style>
+  :root { --fondo:#10141c; --texto:#e8edf5; --tenue:#93a1b5; --acento:#4da3ff; }
+  body {
+    margin:0; min-height:100vh; display:grid; place-items:center;
+    background:var(--fondo); color:var(--texto); text-align:center;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  main { padding: 2rem 1.2rem; max-width: 34rem; }
+  h1 { margin:0 0 .3rem; font-size:1.6rem; }
+  h1::before { content:"▚ "; color:var(--acento); }
+  p.sub { color:var(--tenue); margin:.2rem 0 1.4rem; font-size:.92rem; }
+  a.boton {
+    display:inline-block; background:var(--acento); color:#08111d; font-weight:600;
+    padding:.6rem 1.2rem; border-radius:8px; text-decoration:none;
+  }
+  ul { text-align:left; color:var(--tenue); font-size:.88rem; line-height:1.9; margin:1.6rem 0 0; padding-left:1.2rem; }
+  code { background:#1e2532; padding:.1rem .35rem; border-radius:4px; font-size:.86em; }
+</style>
+</head>
+<body>
+<main>
+  <h1>DataForge</h1>
+  <p class="sub">Documentación técnica · SI-783 Base de Datos II</p>
+  <p><a class="boton" href="./manual-tecnico.md">Abrir el manual técnico</a></p>
+  <ul>
+    <li><a href="./manual-tecnico.md">Manual técnico</a> — qué hace y cómo se ejecuta</li>
+    <li><a href="./diccionario-datos.md">Diccionario de datos</a> — tablas, columnas y claves</li>
+    <li><a href="./ddl.sql">DDL y datos de ejemplo</a> — script de SQLite con 1 213 filas</li>
+    <li><a href="./diagrama-er.mmd">Diagrama ER</a> — fuente en Mermaid</li>
+  </ul>
+  <p class="sub" style="margin-top:1.8rem">
+    La aplicación interactiva es un servidor Python y se despliega en
+    <a href="https://render.com" style="color:var(--acento)">Render</a>;
+    los alojamientos de archivos estáticos no pueden ejecutarla.
+  </p>
+</main>
+</body>
+</html>
