@@ -1,0 +1,26 @@
+# Configuracion de despliegue en Render.
+# https://render.com/docs/blueprint-spec
+#
+# DataForge es una aplicacion Python sin dependencias externas: usa sqlite3 y
+# http.server, ambos de la biblioteca estandar. Por eso el build no instala nada
+# y el servicio arranca con un solo comando.
+#
+# Para desplegar: en render.com, "New" > "Blueprint", apuntar a este repositorio.
+# Render lee este archivo y crea el servicio automaticamente.
+
+services:
+  - type: web
+    name: dataforge-si783
+    runtime: python
+    plan: free
+    region: oregon
+    # No hay dependencias que instalar: el nucleo solo usa la biblioteca estandar.
+    buildCommand: python3 -c "import sys; print(sys.version)"
+    # El puerto lo asigna Render y lo pasa en $PORT; --host 0.0.0.0 es
+    # obligatorio para que el servicio sea alcanzable desde fuera.
+    startCommand: python3 app.py --host 0.0.0.0 --puerto $PORT --sin-navegador
+    healthCheckPath: /api/esquema
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
