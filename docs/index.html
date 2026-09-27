@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>DataForge · documentación técnica</title>
 <meta name="description" content="Documentación técnica de DataForge, generador de datos de prueba para bases de datos relacionales. SI-783 Base de Datos II.">
-<meta http-equiv="refresh" content="1; url=./manual-tecnico.md">
+<!-- Sin meta-refresh: redirigia al .md, que el navegador muestra como texto
+     crudo. La portada es la portada, con enlaces que ellector puede elegir. -->
 <style>
   :root { --fondo:#10141c; --texto:#e8edf5; --tenue:#93a1b5; --acento:#4da3ff; }
   body {
@@ -21,7 +22,13 @@
     display:inline-block; background:var(--acento); color:#08111d; font-weight:600;
     padding:.6rem 1.2rem; border-radius:8px; text-decoration:none;
   }
-  ul { text-align:left; color:var(--tenue); font-size:.88rem; line-height:1.9; margin:1.6rem 0 0; padding-left:1.2rem; }
+  ul { text-align:left; color:var(--tenue); font-size:.88rem; line-height:1.9; margin:1.2rem 0 0; padding-left:1.2rem; }
+  h2 { font-size:1rem; color:var(--texto); margin:2rem 0 .6rem; }
+  .diagrama {
+    background:#fff; border:1px solid var(--borde, #2a3444); border-radius:8px;
+    padding:.8rem; max-height:70vh; overflow:auto;
+  }
+  .diagrama img { max-width:100%; height:auto; display:block; margin:0 auto; }
   code { background:#1e2532; padding:.1rem .35rem; border-radius:4px; font-size:.86em; }
 </style>
 </head>
@@ -36,6 +43,15 @@
     <li><a href="./ddl.sql">DDL y datos de ejemplo</a> — script de SQLite con 1 213 filas</li>
     <li><a href="./diagrama-er.mmd">Diagrama ER</a> — fuente en Mermaid</li>
   </ul>
+
+  <h2>Diagrama entidad-relación</h2>
+  <div class="diagrama">
+    <img src="./diagrama-er.svg"
+         alt="Diagrama entidad-relación del esquema EPSIS Salud: ocho entidades
+              con sus columnas, claves primarias, foráneas y únicas, y sus ocho
+              relaciones.">
+  </div>
+
   <p class="sub" style="margin-top:1.8rem">
     La aplicación interactiva es un servidor Python y se despliega en
     <a href="https://render.com" style="color:var(--acento)">Render</a>;
